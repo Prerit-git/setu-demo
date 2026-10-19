@@ -1,0 +1,9 @@
+"use client";
+import {useState} from "react";import {motion} from "framer-motion";import {Header,Stagger,Item} from "@/components/UI";import {CHECK} from "@/lib/data";
+export default function Checklist(){const [st,setSt]=useState(()=>Object.fromEntries(Object.entries(CHECK).map(([k,v])=>[k,v.map((_,i)=>i===3&&k==="Property"?"upcoming":k==="WhatsApp Triggers"&&i===0?"paused":"active")])));
+const tog=(k,i)=>setSt(s=>({...s,[k]:s[k].map((x,j)=>j===i?(x==="active"?"paused":"active"):x)}));
+const C={active:"border-brand/40 text-brand",paused:"border-slate-500 text-slate-400",upcoming:"border-amber/50 text-amber"};
+const tot=Object.values(st).flat(),live=tot.filter(x=>x==="active").length;
+return <div><Header eyebrow="Module checklist" title="Automation blueprint" sub={`${live} of ${tot.length} automations live. Kisi bhi row pe click karke Active/Paused toggle karo.`}/>
+<Stagger className="grid gap-5 lg:grid-cols-2">{Object.entries(CHECK).map(([k,items])=>{const p=Math.round(st[k].filter(x=>x==="active").length/items.length*100);return <Item key={k} className="card p-0"><div className="flex items-center justify-between p-4"><h3 className="font-bold">{k}</h3><div className="flex items-center gap-3"><div className="h-1.5 w-32 rounded bg-line"><motion.div className="h-1.5 rounded bg-brand" animate={{width:p+"%"}}/></div><span className="font-mono text-xs text-brand">{p}%</span></div></div>
+{items.map((n,i)=><button key={i} onClick={()=>tog(k,i)} className="flex w-full items-center gap-3 border-t border-line px-4 py-3 text-left text-sm hover:bg-white/5"><span className="font-mono text-[11px] text-slate-600">{String(i+1).padStart(2,"0")}</span><span className={`h-2 w-2 rounded-full ${st[k][i]==="active"?"bg-brand dot":"bg-slate-500"}`}/><span className="flex-1">{n}</span><span className={`pill border ${C[st[k][i]]}`}>{st[k][i]}</span></button>)}</Item>})}</Stagger></div>}
